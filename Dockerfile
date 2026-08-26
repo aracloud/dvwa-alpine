@@ -35,18 +35,6 @@ RUN mkdir -p /run/php \
     && sed -i 's/user = nobody/user = nginx/g' /etc/php81/php-fpm.d/www.conf \
     && sed -i 's/group = nobody/group = nginx/g' /etc/php81/php-fpm.d/www.conf
 
-# 4. MariaDB initialisieren und DVWA-Datenbank vorab einrichten
-RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql \
-    && mysqld --user=mysql --datadir=/var/lib/mysql --bootstrap < /usr/share/mariadb/mysql_system_tables.sql \
-    && mysqld --user=mysql --datadir=/var/lib/mysql --bootstrap < /usr/share/mariadb/mysql_system_tables_data.sql \
-    && (mysqld --user=mysql --datadir=/var/lib/mysql & \
-        PID=$!; \
-        sleep 3; \
-        mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';"; \
-        mysql -u root -ppassword -e "CREATE DATABASE IF NOT EXISTS dvwa;"; \
-        mysql -u root -ppassword dvwa < /var/www/html/_developer_setup/mysql_init.sql; \
-        kill "$PID"; \
-        wait "$PID")
 
 # 5. init.sql einbinden
 COPY init.sql /docker-entrypoint-initdb.d/init.sql
