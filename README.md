@@ -326,6 +326,7 @@ dvwa-alpine/
 ├── config.inc.php
 ├── entrypoint.sh
 ├── init.sql
+├── login.php
 └── nginx.conf
 ```
 
