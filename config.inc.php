@@ -1,6 +1,9 @@
 <?php
 
+$DBMS = 'MySQL';
+
 $_DVWA = array();
+
 $_DVWA[ 'db_server' ]   = '127.0.0.1';
 $_DVWA[ 'db_database' ] = 'dvwa';
 $_DVWA[ 'db_user' ]     = 'root';
