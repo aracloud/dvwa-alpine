@@ -108,14 +108,22 @@ echo "<!DOCTYPE html>
 	</form>
 
 	<br />
-	<div class="server-info">
+
+	$serverName = $_SERVER['SERVER_NAME'] ?? 'N/A';
+	$serverIp = $_SERVER['SERVER_ADDR'] ?? 'N/A';
+	$clientIp = $_SERVER['REMOTE_ADDR'] ?? 'N/A';
+	$forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? 'N/A';
+
+	<div class=\"server-info\">
+
 		<strong>Server Name:</strong> " . htmlspecialchars($serverName) . "<br />
 		<strong>Server IP:</strong> " . htmlspecialchars($serverIp) . "<br />
 		<strong>Client/Proxy IP:</strong> " . htmlspecialchars($clientIp) . "<br />
 		<strong>X-Forwarded-For:</strong> " . htmlspecialchars($forwardedFor) . "<br />
+
 	</div>
 
-<br />
+	<br />
 
 	{$messagesHtml}
 
