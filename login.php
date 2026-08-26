@@ -49,6 +49,11 @@ if( isset( $_POST[ 'Login' ] ) ) {
 	dvwaRedirect( 'login.php' );
 }
 
+$serverName = $_SERVER['SERVER_NAME'] ?? 'N/A';
+$serverIp = $_SERVER['SERVER_ADDR'] ?? 'N/A';
+$clientIp = $_SERVER['REMOTE_ADDR'] ?? 'N/A';
+$forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? 'N/A';
+
 $messagesHtml = messagesPopAllToHtml();
 
 Header( 'Cache-Control: no-cache, must-revalidate');    // HTTP/1.1
@@ -108,11 +113,6 @@ echo "<!DOCTYPE html>
 	</form>
 
 	<br />
-
-	$serverName = $_SERVER['SERVER_NAME'] ?? 'N/A';
-	$serverIp = $_SERVER['SERVER_ADDR'] ?? 'N/A';
-	$clientIp = $_SERVER['REMOTE_ADDR'] ?? 'N/A';
-	$forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? 'N/A';
 
 	<div class=\"server-info\">
 
