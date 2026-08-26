@@ -1,44 +1,78 @@
 #!/bin/sh
 
-# Verzeichnisse absichern
-mkdir -p /run/mysqld /run/php
-chown -R mysql:mysql /run/mysqld /var/lib/mysql
-chown -R nginx:nginx /run/php
+set -e
 
-# 1. MariaDB im Hintergrund starten
-echo "[*] Starte MariaDB..."
-mysqld --user=mysql --datadir=/var/lib/mysql &
+MYSQL_DATA="/var/lib/mysql"
+MYSQL_SOCKET="/run/mysqld/mysqld.sock"
+INIT_MARKER="/var/lib/mysql/.dvwa_initialized"
 
-# 2. PHP-FPM im Hintergrund starten
-echo "[*] Starte PHP-FPM..."
-php-fpm81
+mkdir -p /run/mysqld
+chown mysql:mysql /run/mysqld
 
-# Kurz warten, bis die Dienste bereit sind
-sleep 5
+if [ ! -d "$MYSQL_DATA/mysql" ]; then
+    echo "==> Initializing MariaDB..."
 
-# 3. MariaDB initialisieren, falls noch nicht vorhanden
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql
+    mysql_install_db \
+        --user=mysql \
+        --datadir="$MYSQL_DATA"
+fi
 
-    mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking &
-    MYSQL_PID=$!
+echo "==> Starting MariaDB..."
 
-    until mysqladmin -u root ping >/dev/null 2>&1; do
-        sleep 1
-    done
+mysqld \
+    --user=mysql \
+    --datadir="$MYSQL_DATA" \
+    --socket="$MYSQL_SOCKET" \
+    --pid-file=/run/mysqld/mysqld.pid \
+    --bind-address=127.0.0.1 &
 
-    mysql -u root <<-EOSQL
+MYSQL_PID=$!
+
+echo "==> Waiting for MariaDB..."
+
+until mysqladmin \
+    --socket="$MYSQL_SOCKET" \
+    -u root \
+    ping >/dev/null 2>&1
+do
+    sleep 1
+done
+
+echo "==> MariaDB is ready."
+
+if [ ! -f "$INIT_MARKER" ]; then
+
+    echo "==> Configuring MariaDB..."
+
+    mysql \
+        --socket="$MYSQL_SOCKET" \
+        -u root <<-EOSQL
         ALTER USER 'root'@'localhost' IDENTIFIED BY 'password';
         CREATE DATABASE IF NOT EXISTS dvwa;
 EOSQL
 
-    mysql -u root -ppassword dvwa < /docker-entrypoint-initdb.d/init.sql
+    echo "==> Importing init.sql..."
 
-    mysqladmin -u root -ppassword shutdown
-    wait $MYSQL_PID
+    mysql \
+        --socket="$MYSQL_SOCKET" \
+        -u root \
+        -ppassword \
+        dvwa < /docker-entrypoint-initdb.d/init.sql
+
+    touch "$INIT_MARKER"
+
+    echo "==> DVWA database initialized."
+
+else
+
+    echo "==> DVWA database already initialized."
+
 fi
 
+echo "==> Starting PHP-FPM..."
 
-# 4. Nginx im Vordergrund starten
-echo "[*] Starte Nginx..."
+php-fpm81 -D
+
+echo "==> Starting Nginx..."
+
 exec nginx -g "daemon off;"
