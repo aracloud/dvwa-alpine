@@ -24,7 +24,9 @@ mysqld \
     --datadir="$MYSQL_DATA" \
     --socket="$MYSQL_SOCKET" \
     --pid-file=/run/mysqld/mysqld.pid \
-    --bind-address=127.0.0.1 &
+    --bind-address=127.0.0.1 \
+    --port=3306 \
+    --skip-networking=0 &
 
 MYSQL_PID=$!
 
