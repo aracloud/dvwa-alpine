@@ -20,7 +20,6 @@ RUN apk add --no-cache \
 WORKDIR /var/www/html
 RUN git clone --depth 1 https://github.com/digininja/DVWA.git . \
     && chown -R nginx:nginx /var/www/html \
-    && chmod -R 777 /var/www/html/external/phpids/0.6/lib/IDS/tmp \
     && chmod -R 777 /var/www/html/hackable/uploads
 
 # 3. Nginx & PHP-FPM konfigurieren
