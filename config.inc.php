@@ -6,7 +6,6 @@ $_DVWA[ 'db_database' ] = 'dvwa';
 $_DVWA[ 'db_user' ]     = 'root';
 $_DVWA[ 'db_password' ] = 'password';
 $_DVWA[ 'db_port' ]     = '3306';
-$_DVWA[ 'db_driver' ]   = 'mysql';
 
 $_DVWA[ 'recaptcha_public_key' ]  = '6Ld2sf4SAAAAAKSg3slg9gSBo8S2K3THrA6it0An';
 $_DVWA[ 'recaptWA_private_key' ] = '6Ld2sf4SAAAAAF1gS6eA0AnED9zYg6sAg6A0AnED';
