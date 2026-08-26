@@ -25,7 +25,7 @@ RUN git clone --depth 1 https://github.com/digininja/DVWA.git . \
 # 3. Nginx & PHP-FPM konfigurieren
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY config.inc.php /var/www/html/config/config.inc.php
-COPY login.php /var/www/html/config/login.php
+COPY login.php /var/www/html/login.php
 
 # PHP-FPM Socket-Verzeichnis und PHP-Einstellungen anpassen
 RUN mkdir -p /run/php \
