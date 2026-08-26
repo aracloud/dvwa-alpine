@@ -48,7 +48,10 @@ RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql \
         kill "$PID"; \
         wait "$PID")
 
-# 5. Entrypoint-Skript kopieren
+# 5. init.sql einbinden
+COPY init.sql /docker-entrypoint-initdb.d/init.sql
+
+# 6. Entrypoint-Skript kopieren
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
